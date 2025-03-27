@@ -13,7 +13,7 @@ import { Db, MongoClient, ObjectId } from "mongodb";
  *       200:
  *         description: Hello Movies
  */
-export async function GET(request: Request, { params }: { params: { idMovie: string } }): Promise<NextResponse> {
+export async function GET(request: Request, { params }: { params: any }): Promise<NextResponse> {
   try {
     const client: MongoClient = await clientPromise;
     const db: Db = client.db("sample_mflix");
