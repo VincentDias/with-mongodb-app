@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { testDatabaseConnection } from "../actions";
 import Link from "next/link";
+import MoviesList from "../../pages/movies/movieList";
 
 export default async function Home() {
   const isConnected = await testDatabaseConnection();
@@ -17,8 +18,7 @@ export default async function Home() {
             className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
             href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
             target="_blank"
-            rel="noopener noreferrer"
-          >
+            rel="noopener noreferrer">
             By{" "}
             <Image
               src="/vercel.svg"
@@ -53,22 +53,17 @@ export default async function Home() {
           />
         </div>
         {isConnected ? (
-          <h2 className="text-lg text-green-500">
-            You are connected to MongoDB!
-          </h2>
+          <h2 className="text-lg text-green-500">You are connected to MongoDB!</h2>
         ) : (
           <h2 className="text-lg text-red-500">
-            You are NOT connected to MongoDB. Check the <code>README.md</code>{" "}
-            for instructions.
+            You are NOT connected to MongoDB. Check the <code>README.md</code> for instructions.
           </h2>
         )}
         <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          This page uses the&nbsp;<strong>App Router</strong>. Check out the
-          Pages Router version here:&nbsp;
+          This page uses the&nbsp;<strong>App Router</strong>. Check out the Pages Router version here:&nbsp;
           <Link
             href="/"
-            className="underline transition-colors ease-in-out hover:text-green-500"
-          >
+            className="underline transition-colors ease-in-out hover:text-green-500">
             <code>pages/index.tsx</code>
           </Link>
         </p>
@@ -79,8 +74,7 @@ export default async function Home() {
           href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
           className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
           target="_blank"
-          rel="noopener noreferrer"
-        >
+          rel="noopener noreferrer">
           <h2 className={`mb-3 text-2xl font-semibold`}>
             Docs{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
@@ -96,8 +90,7 @@ export default async function Home() {
           href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
           className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
           target="_blank"
-          rel="noopener noreferrer"
-        >
+          rel="noopener noreferrer">
           <h2 className={`mb-3 text-2xl font-semibold`}>
             Learn{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
@@ -113,25 +106,21 @@ export default async function Home() {
           href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app&database=mongodb"
           className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
           target="_blank"
-          rel="noopener noreferrer"
-        >
+          rel="noopener noreferrer">
           <h2 className={`mb-3 text-2xl font-semibold`}>
             Templates{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>
           </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js + MongoDB.
-          </p>
+          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>Explore starter templates for Next.js + MongoDB.</p>
         </a>
 
         <a
           href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-mongodb&project-name=nextjs-mongodb&repository-name=nextjs-mongodb&integration-ids=oac_jnzmjqM10gllKmSrG0SGrHOH"
           className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
           target="_blank"
-          rel="noopener noreferrer"
-        >
+          rel="noopener noreferrer">
           <h2 className={`mb-3 text-2xl font-semibold`}>
             Deploy{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
@@ -143,6 +132,7 @@ export default async function Home() {
           </p>
         </a>
       </div>
+      <MoviesList />
     </main>
   );
 }
