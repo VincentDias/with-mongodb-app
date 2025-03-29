@@ -3,21 +3,40 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import { Db, MongoClient, ObjectId } from "mongodb";
+import { theaterSchema } from "@/app/schemas/theaterSchema";
 
 /**
  * @swagger
- * /api/theaters:
+ * /api/theaters/{idTheater}:
  *   get:
- *     description: Returns theaters
+ *     summary: Get a theater by id
+ *     description: Get a theater by id
+ *     parameters:
+ *       - in: path
+ *         name: idTheater
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the theater
  *     responses:
  *       200:
- *         description: Hello Theaters
+ *         description: Theater found
+ *       400:
+ *         description: Invalid request
+ *       404:
+ *         description: Comment not found
+ *       500:
+ *         description: Internal server error
  */
-export async function GET(request: Request, { params }: { params: { idTheater: string } }): Promise<NextResponse> {
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ idTheater: string }> }
+): Promise<NextResponse> {
   try {
-    const { idTheater } = await params;
     const client: MongoClient = await clientPromise;
     const db: Db = client.db("sample_mflix");
+
+    const { idTheater } = await params;
 
     if (!ObjectId.isValid(idTheater)) {
       return NextResponse.json({ status: 400, message: "Invalid theater ID", error: "ID format is incorrect" });
@@ -43,15 +62,15 @@ export async function GET(request: Request, { params }: { params: { idTheater: s
  * @swagger
  * /api/theaters/{idTheater}:
  *   put:
- *     summary: Met à jour un film existant
- *     description: Met à jour les détails d'un film dans la base de données.
+ *     summary: Update theater
+ *     description: Update theater
  *     parameters:
  *       - in: path
  *         name: idTheater
  *         required: true
  *         schema:
  *           type: string
- *         description: L'ID du film à mettre à jour
+ *         description: ID of the theater to update
  *     requestBody:
  *       required: true
  *       content:
@@ -59,35 +78,75 @@ export async function GET(request: Request, { params }: { params: { idTheater: s
  *           schema:
  *             type: object
  *             properties:
- *               title:
+ *               street1:
  *                 type: string
- *                 description: Le titre du film
- *               director:
+ *                 description: Street
+ *               city:
  *                 type: string
- *                 description: Le réalisateur du film
+ *                 description: City
+ *               state:
+ *                 type: string
+ *                 description: State
+ *               zipcode:
+ *                 type: string
+ *                 description: Zipcode
  *     responses:
  *       200:
- *         description: Film mis à jour avec succès
+ *         description: Theater successfully updated
  *       400:
- *         description: Requête incorrecte
+ *         description: Invalid request format
  *       404:
- *         description: Film non trouvé
+ *         description: Theater not found
  *       500:
- *         description: Erreur interne du serveur
+ *         description: Internal server error
  */
-export async function PUT(request: Request, { params }: { params: { idTheater: string } }): Promise<NextResponse> {
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ idTheater: string }> }
+): Promise<NextResponse> {
   try {
-    const { idTheater } = await params;
     const client: MongoClient = await clientPromise;
     const db: Db = client.db("sample_mflix");
 
+    const { idTheater } = await params;
+
     if (!ObjectId.isValid(idTheater)) {
-      return NextResponse.json({ status: 400, message: "Invalid theater ID", error: "ID format is incorrect" });
+      return NextResponse.json({
+        status: 400,
+        message: "Invalid theater ID",
+        error: "ID format is incorrect",
+      });
     }
 
     const theaterData = await request.json();
 
-    const result = await db.collection("theaters").updateOne({ _id: new ObjectId(idTheater) }, { $set: theaterData });
+    try {
+      await theaterSchema.validate(theaterData, { abortEarly: false });
+    } catch (validationError: any) {
+      // Return validation errors
+      return NextResponse.json({
+        status: 400,
+        message: "Validation failed",
+        errors: validationError.errors,
+      });
+    }
+
+    // Construct the updated theater object
+    const theaterUpdated = {
+      ...theaterData,
+      location: {
+        address: {
+          street1: theaterData.street1,
+          city: theaterData.city,
+          state: theaterData.state,
+          zipcode: theaterData.zipcode,
+        },
+      },
+    };
+
+    const result = await db
+      .collection("theaters")
+      .updateOne({ _id: new ObjectId(idTheater) }, { $set: theaterUpdated });
 
     if (result.matchedCount === 0) {
       return NextResponse.json({
@@ -97,9 +156,15 @@ export async function PUT(request: Request, { params }: { params: { idTheater: s
       });
     }
 
-    return NextResponse.json({ status: 200, message: "Theater updated successfully" });
+    return NextResponse.json({ status: 200, message: "Theater updated successfully", theaterUpdated });
   } catch (error: any) {
-    return NextResponse.json({ status: 500, message: "Internal Server Error", error: error.message });
+    console.error("Error occurred while updating theater:", error);
+
+    return NextResponse.json({
+      status: 500,
+      message: "Internal Server Error",
+      error: error.message || "An unexpected error occurred",
+    });
   }
 }
 
@@ -126,11 +191,15 @@ export async function PUT(request: Request, { params }: { params: { idTheater: s
  *       500:
  *         description: Internal error
  */
-export async function DELETE(request: Request, { params }: { params: { idTheater: string } }): Promise<NextResponse> {
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ idTheater: string }> }
+): Promise<NextResponse> {
   try {
-    const { idTheater } = params;
     const client: MongoClient = await clientPromise;
     const db: Db = client.db("sample_mflix");
+
+    const { idTheater } = await params;
 
     if (!ObjectId.isValid(idTheater)) {
       return NextResponse.json({ status: 400, message: "Invalid theater ID", error: "ID format is incorrect" });

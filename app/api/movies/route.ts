@@ -1,3 +1,5 @@
+//movies
+
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import { Db, MongoClient } from "mongodb";
@@ -34,6 +36,7 @@ export async function GET(): Promise<NextResponse> {
  * @swagger
  * /api/movies:
  *   post:
+ *     summary: Create a new movie
  *     description: Create a new movie
  *     requestBody:
  *       required: true

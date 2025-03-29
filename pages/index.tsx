@@ -13,7 +13,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const getServerSideProps: GetServerSideProps<ConnectionStatus> = async () => {
   try {
-    await client; // `await client.connect()` will use the default database passed in the MONGODB_URI
+    await client;
     return {
       props: { isConnected: true },
     };
@@ -76,6 +76,8 @@ export default function Home({ isConnected }: InferGetServerSidePropsType<typeof
           </h2>
         )}
       </div>
+
+      <MoviesList />
     </main>
   );
 }

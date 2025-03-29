@@ -8,15 +8,15 @@ import { Db, MongoClient, ObjectId } from "mongodb";
  * @swagger
  * /api/movies/{idMovie}:
  *   get:
- *     summary: Get a movie by ID
- *     description: Get a movie by ID
+ *     summary: Get a movie by id
+ *     description: Get a movie by id
  *     parameters:
  *       - in: path
  *         name: idMovie
  *         required: true
  *         schema:
  *           type: string
- *         description: ID of the movie
+ *         description: idMovie
  *     responses:
  *       200:
  *         description: Movie found
@@ -27,11 +27,15 @@ import { Db, MongoClient, ObjectId } from "mongodb";
  *       500:
  *         description: Internal server error
  */
-export async function GET(request: Request, { params }: { params: { idMovie: string } }): Promise<NextResponse> {
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ idMovie: string }> }
+): Promise<NextResponse> {
   try {
-    const { idMovie } = await params;
     const client: MongoClient = await clientPromise;
     const db: Db = client.db("sample_mflix");
+
+    const { idMovie } = await params;
 
     if (!ObjectId.isValid(idMovie)) {
       return NextResponse.json({ status: 400, message: "Invalid movie ID", error: "ID format is incorrect" });
@@ -53,8 +57,8 @@ export async function GET(request: Request, { params }: { params: { idMovie: str
  * @swagger
  * /api/movies/{idMovie}:
  *   put:
- *     summary: Update a movie by ID
- *     description: Update a movie by ID
+ *     summary: Update a movie by id
+ *     description: Update a movie by id
  *     parameters:
  *       - in: path
  *         name: idMovie
@@ -78,7 +82,7 @@ export async function GET(request: Request, { params }: { params: { idMovie: str
  *                 description: Movie's poster URL
  *               title:
  *                 type: string
- *                 description: The title of the movie
+ *                 description: Movie's title
  *               plot:
  *                  type: string
  *                  description: Movie's plot
@@ -96,7 +100,10 @@ export async function GET(request: Request, { params }: { params: { idMovie: str
  *       500:
  *         description: Internal server error
  */
-export async function PUT(request: Request, { params }: { params: { idMovie: string } }): Promise<NextResponse> {
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ idMovie: string }> }
+): Promise<NextResponse> {
   try {
     const client: MongoClient = await clientPromise;
     const db: Db = client.db("sample_mflix");
@@ -144,8 +151,8 @@ export async function PUT(request: Request, { params }: { params: { idMovie: str
  * @swagger
  * /api/movies/{idMovie}:
  *   delete:
- *     summary: Delete an existing movie
- *     description: Deletes a movie from the database using its ID.
+ *     summary: Delete movie
+ *     description: Delete movie
  *     parameters:
  *       - in: path
  *         name: idMovie
@@ -163,7 +170,10 @@ export async function PUT(request: Request, { params }: { params: { idMovie: str
  *       500:
  *         description: Internal server error
  */
-export async function DELETE(request: Request, { params }: { params: { idMovie: string } }): Promise<NextResponse> {
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ idMovie: string }> }
+): Promise<NextResponse> {
   try {
     const client: MongoClient = await clientPromise;
     const db: Db = client.db("sample_mflix");

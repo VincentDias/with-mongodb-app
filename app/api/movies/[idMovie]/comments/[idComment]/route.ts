@@ -8,8 +8,8 @@ import { Db, MongoClient, ObjectId } from "mongodb";
  * @swagger
  * /api/movies/{idMovie}/comments/{idComment}:
  *   get:
- *     summary: Get a comment
- *     description: Get a comment by ID
+ *     summary: Get a comment for a given movie
+ *     description: Get a comment by ID for a given movie
  *     parameters:
  *       - in: path
  *         name: idMovie
@@ -35,7 +35,7 @@ import { Db, MongoClient, ObjectId } from "mongodb";
  */
 export async function GET(
   request: Request,
-  { params }: { params: { idMovie: string; idComment: string } }
+  { params }: { params: Promise<{ idMovie: string; idComment: string }> }
 ): Promise<NextResponse> {
   try {
     const client: MongoClient = await clientPromise;
@@ -77,8 +77,8 @@ export async function GET(
  * @swagger
  * /api/movies/{idMovie}/comments/{idComment}:
  *   put:
- *     summary: Update a comment
- *     description: Update a comment by ID
+ *     summary: Update a comment for a given movie
+ *     description: Update a comment for a given movie
  *     parameters:
  *       - in: path
  *         name: idMovie
@@ -120,7 +120,7 @@ export async function GET(
  */
 export async function PUT(
   request: Request,
-  { params }: { params: { idMovie: string; idComment: string } }
+  { params }: { params: Promise<{ idMovie: string; idComment: string }> }
 ): Promise<NextResponse> {
   try {
     const client: MongoClient = await clientPromise;
@@ -164,8 +164,8 @@ export async function PUT(
  * @swagger
  * /api/movies/{idMovie}/comments/{idComment}:
  *   delete:
- *     summary: Update a comment
- *     description: Update a comment by ID
+ *     summary: Delete a comment for a given movie
+ *     description: Delete a comment for a given movie
  *     parameters:
  *       - in: path
  *         name: idMovie
@@ -178,10 +178,10 @@ export async function PUT(
  *         required: true
  *         schema:
  *           type: string
- *         description: ID of the comment to update
+ *         description: ID of the comment to delete
  *     responses:
  *       200:
- *         description: Comment updated successfully
+ *         description: Comment deleted successfully
  *       400:
  *         description: Invalid request
  *       404:
@@ -191,7 +191,7 @@ export async function PUT(
  */
 export async function DELETE(
   request: Request,
-  { params }: { params: { idMovie: string; idComment: string } }
+  { params }: { params: Promise<{ idMovie: string; idComment: string }> }
 ): Promise<NextResponse> {
   try {
     const client: MongoClient = await clientPromise;

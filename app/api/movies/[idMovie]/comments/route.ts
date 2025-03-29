@@ -16,7 +16,7 @@ import { Db, MongoClient, ObjectId } from "mongodb";
  *         required: true
  *         schema:
  *           type: string
- *         description: Comment's idMovie
+ *         description: idMovie's comments
  *     responses:
  *       200:
  *         description: Comment found
@@ -27,7 +27,10 @@ import { Db, MongoClient, ObjectId } from "mongodb";
  *       500:
  *         description: Internal server error
  */
-export async function GET(request: Request, { params }: { params: { idMovie: string } }): Promise<NextResponse> {
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ idMovie: string }> }
+): Promise<NextResponse> {
   try {
     const client: MongoClient = await clientPromise;
     const db: Db = client.db("sample_mflix");
@@ -61,6 +64,7 @@ export async function GET(request: Request, { params }: { params: { idMovie: str
  * @swagger
  * /api/movies/{idMovie}/comments:
  *   post:
+ *     summary: Add a comment to a movie
  *     description: Add a comment to a movie
  *     parameters:
  *       - in: path
@@ -95,7 +99,10 @@ export async function GET(request: Request, { params }: { params: { idMovie: str
  *       500:
  *         description: Internal server error
  */
-export async function POST(request: Request, { params }: { params: { idMovie: string } }): Promise<NextResponse> {
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ idMovie: string }> }
+): Promise<NextResponse> {
   try {
     const client: MongoClient = await clientPromise;
     const db: Db = client.db("sample_mflix");
