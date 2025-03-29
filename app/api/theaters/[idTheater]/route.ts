@@ -1,9 +1,9 @@
 // page/api/theaters/[idTheater]/route.ts
 
-import { NextResponse } from "next/server";
-import clientPromise from "@/lib/mongodb";
-import { Db, MongoClient, ObjectId } from "mongodb";
 import { theaterSchema } from "@/app/schemas/theaterSchema";
+import { ObjectId } from "mongodb";
+import { NextResponse } from "next/server";
+import { db } from "../../../../lib/db";
 
 /**
  * @swagger
@@ -33,9 +33,6 @@ export async function GET(
   { params }: { params: Promise<{ idTheater: string }> }
 ): Promise<NextResponse> {
   try {
-    const client: MongoClient = await clientPromise;
-    const db: Db = client.db("sample_mflix");
-
     const { idTheater } = await params;
 
     if (!ObjectId.isValid(idTheater)) {
@@ -105,9 +102,6 @@ export async function PUT(
   { params }: { params: Promise<{ idTheater: string }> }
 ): Promise<NextResponse> {
   try {
-    const client: MongoClient = await clientPromise;
-    const db: Db = client.db("sample_mflix");
-
     const { idTheater } = await params;
 
     if (!ObjectId.isValid(idTheater)) {
@@ -196,9 +190,6 @@ export async function DELETE(
   { params }: { params: Promise<{ idTheater: string }> }
 ): Promise<NextResponse> {
   try {
-    const client: MongoClient = await clientPromise;
-    const db: Db = client.db("sample_mflix");
-
     const { idTheater } = await params;
 
     if (!ObjectId.isValid(idTheater)) {

@@ -1,8 +1,7 @@
 //movies
 
 import { NextResponse } from "next/server";
-import clientPromise from "@/lib/mongodb";
-import { Db, MongoClient } from "mongodb";
+import { db } from "../../../lib/db";
 
 /**
  * @swagger
@@ -22,8 +21,6 @@ import { Db, MongoClient } from "mongodb";
  */
 export async function GET(): Promise<NextResponse> {
   try {
-    const client: MongoClient = await clientPromise;
-    const db: Db = client.db("sample_mflix");
     const movies = await db.collection("movies").find({}).limit(20).toArray();
 
     return NextResponse.json({ status: 200, data: movies });
@@ -71,9 +68,6 @@ export async function GET(): Promise<NextResponse> {
  */
 export async function POST(request: Request): Promise<NextResponse> {
   try {
-    const client: MongoClient = await clientPromise;
-    const db: Db = client.db("sample_mflix");
-
     const movieData = await request.json();
 
     if (!movieData.title || !movieData.director) {

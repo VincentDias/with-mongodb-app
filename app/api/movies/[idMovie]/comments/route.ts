@@ -1,8 +1,8 @@
 // page/api/comments/[idComment]/route.ts
 
+import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
-import clientPromise from "@/lib/mongodb";
-import { Db, MongoClient, ObjectId } from "mongodb";
+import { db } from "../../../../../lib/db";
 
 /**
  * @swagger
@@ -32,9 +32,6 @@ export async function GET(
   { params }: { params: Promise<{ idMovie: string }> }
 ): Promise<NextResponse> {
   try {
-    const client: MongoClient = await clientPromise;
-    const db: Db = client.db("sample_mflix");
-
     const { idMovie } = await params;
     if (!ObjectId.isValid(idMovie)) {
       return NextResponse.json({ status: 400, message: "Invalid movie ID", error: "ID format is incorrect" });
@@ -104,9 +101,6 @@ export async function POST(
   { params }: { params: Promise<{ idMovie: string }> }
 ): Promise<NextResponse> {
   try {
-    const client: MongoClient = await clientPromise;
-    const db: Db = client.db("sample_mflix");
-
     const { idMovie } = await params;
     if (!ObjectId.isValid(idMovie)) {
       return NextResponse.json({
