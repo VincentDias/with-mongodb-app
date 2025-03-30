@@ -1,8 +1,8 @@
-import Image from "next/image";
-import Link from "next/link";
+import client from "@/app/api/lib/mongodb";
+import LoginForm from "@/app/components/loginForm";
+import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { Inter } from "next/font/google";
-import client from "@/lib/mongodb";
-import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import Image from "next/image";
 import MoviesList from "./movies/movieList";
 
 type ConnectionStatus = {
@@ -76,6 +76,7 @@ export default function Home({ isConnected }: InferGetServerSidePropsType<typeof
           </h2>
         )}
       </div>
+      <LoginForm />
 
       <MoviesList />
     </main>

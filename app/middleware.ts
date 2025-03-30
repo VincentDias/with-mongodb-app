@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 import jwt from "jsonwebtoken";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 // Clé secrète utilisée pour signer les tokens JWT
 const SECRET_KEY = process.env.JWT_SECRET || "super-secret-key";
@@ -37,7 +37,7 @@ export async function middleware(req: NextRequest) {
     // Tentative de rafraîchissement du token en envoyant une requête à l'API pour obtenir un nouveau token
     try {
       const refreshResponse = await fetch(new URL("/api/auth/refresh", req.url), {
-        method: "GET",
+        method: "POST",
         headers: { Cookie: `refreshToken=${refreshToken}` },
       });
 

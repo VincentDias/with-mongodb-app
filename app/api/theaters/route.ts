@@ -1,9 +1,9 @@
 // page/api/theaters/[idTheater]/route.ts
 
-import { NextResponse } from "next/server";
-import clientPromise from "@/lib/mongodb";
-import { Db, MongoClient, ObjectId } from "mongodb";
+import clientPromise from "@/app/api/lib/mongodb";
 import { theaterSchema } from "@/app/schemas/theaterSchema";
+import { Db, MongoClient, ObjectId } from "mongodb";
+import { NextResponse } from "next/server";
 import * as yup from "yup";
 
 /**

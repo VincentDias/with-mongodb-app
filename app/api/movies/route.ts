@@ -1,14 +1,16 @@
 //movies
 
 import { NextResponse } from "next/server";
-import { db } from "../../../lib/db";
+import movieSchema from "../../schemas/movieSchema";
+import { connectToDb, db } from "../lib/db";
+import { Movie } from "../models/movie";
 
 /**
  * @swagger
  * /api/movies:
  *   get:
- *     summary: Get all movies
- *     description: Get all movies
+ *     summary: Get movies
+ *     description: Get movies
  *     responses:
  *       200:
  *         description: Comment found
@@ -33,8 +35,8 @@ export async function GET(): Promise<NextResponse> {
  * @swagger
  * /api/movies:
  *   post:
- *     summary: Create a new movie
- *     description: Create a new movie
+ *     summary: Add a new movie
+ *     description: Add a new movie
  *     requestBody:
  *       required: true
  *       content:
@@ -49,13 +51,13 @@ export async function GET(): Promise<NextResponse> {
  *                 type: string
  *                 description: Movie's director
  *               poster:
- *                 type: string
+ *                 type: url
  *                 description: Movie's poster URL
  *               plot:
  *                  type: string
  *                  description: Movie's plot
  *               year:
- *                  type: string
+ *                  type: date
  *                  format: date
  *                  description: The release year of the movie (YYYY-MM-DD)
  *     responses:
@@ -68,30 +70,28 @@ export async function GET(): Promise<NextResponse> {
  */
 export async function POST(request: Request): Promise<NextResponse> {
   try {
+    // Extraction des données de la requête
     const movieData = await request.json();
 
-    if (!movieData.title || !movieData.director) {
-      return NextResponse.json({ status: 400, message: "Bad Request", error: "Title and director are required" });
+    // Validation du schéma avec Yup
+    let schemaValide;
+    try {
+      schemaValide = await movieSchema.validate(movieData, { abortEarly: false });
+    } catch (error: any) {
+      throw { status: 400, message: "Bad request", errors: error.errors };
     }
 
-    if (movieData.year) {
-      const parsedYear = new Date(movieData.year);
-      if (isNaN(parsedYear.getTime())) {
-        return NextResponse.json({
-          status: 400,
-          message: "Bad Request",
-          error: "Invalid year format",
-        });
-      }
-      movieData.year = parsedYear;
-    }
+    // Connexion à la base de données
+    await connectToDb();
 
-    movieData.lastupdated = new Date();
+    const newMovie = await Movie.create(schemaValide);
 
-    const result = await db.collection("movies").insertOne(movieData);
-
-    return NextResponse.json({ status: 201, data: { id: result.insertedId, ...movieData } });
+    return NextResponse.json({ status: 201, data: newMovie });
   } catch (error: any) {
+    if (error.status) {
+      return NextResponse.json({ tatus: error.status, message: error.message, errors: error.errors }, { status: 400 });
+    }
+
     return NextResponse.json({ status: 500, message: "Internal Server Error", error: error.message });
   }
 }

@@ -1,31 +1,67 @@
+// import bcrypt from "bcryptjs";
+// import jwt from "jsonwebtoken";
+// import { NextResponse } from "next/server";
+// import { db } from "../../../api/lib/db";
+// import { loginSchema } from "../../../schemas/authSchema";
+
+// if (!process.env.JWT_SECRET) {
+//   throw new Error("Missing JWT_SECRET environment variable");
+// }
+// const SECRET_KEY = process.env.JWT_SECRET;
+
+// export async function POST(req: Request) {
+//   try {
+//     const { email, password } = await req.json();
+
+//     await loginSchema.validate({ email, password }, { abortEarly: false });
+
+//     const user = await db.collection("users").findOne({ email });
+
+//     if (!user) {
+//       return NextResponse.json({ error: "User not found" }, { status: 404 });
+//     }
+
+//     const isPasswordValid = await bcrypt.compare(password, user.password);
+//     if (!isPasswordValid) {
+//       return NextResponse.json({ error: "Invalid credentials" }, { status: 400 });
+//     }
+
+//     const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: "1h" });
+
+//     const response = NextResponse.json({ message: "Authenticated", token });
+//     response.cookies.set("token", "", { httpOnly: true, secure: true, path: "/", maxAge: 0 });
+
+//     response.cookies.set("token", token, { httpOnly: true, secure: true, path: "/" });
+//     await db.collection("sessions").updateOne(
+//       { user_id: user._id },
+//       {
+//         $set: {
+//           jwt: token,
+//         },
+//       },
+//       { upsert: false }
+//     );
+
+//     return response;
+//   } catch (error: any) {
+//     console.error("Authentication error:", error.message);
+//     return NextResponse.json({ error: error.message }, { status: 500 });
+//   }
+// }
+
 import { NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
-
-const SECRET_KEY = process.env.JWT_SECRET || "super-secret-key";
-const REFRESH_SECRET = process.env.REFRESH_SECRET || "refresh-secret";
-
-// Simuler une base de données (remplacez par une vraie DB)
-const users = [
-  { username: "admin", password: bcrypt.hashSync("password", 10) }, // Hasher le mot de passe
-];
+import { authenticateUser } from "../../lib/authService";
 
 export async function POST(req: Request) {
-  const { username, password } = await req.json();
+  try {
+    const { email, password } = await req.json();
+    const token = await authenticateUser(email, password);
 
-  const user = users.find((u) => u.username === username);
-  if (!user || !bcrypt.compareSync(password, user.password)) {
-    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    const response = NextResponse.json({ message: "Authenticated", token });
+    response.cookies.set("token", token, { httpOnly: true, secure: true, path: "/" });
+
+    return response;
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 401 });
   }
-
-  // Générer les tokens
-  const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: "15m" });
-  const refreshToken = jwt.sign({ username }, REFRESH_SECRET, { expiresIn: "7d" });
-
-  // Stocker les tokens en cookies
-  const response = NextResponse.json({ message: "Authenticated", jwt: token });
-  response.cookies.set("token", token, { httpOnly: true, secure: true, path: "/" });
-  response.cookies.set("refreshToken", refreshToken, { httpOnly: true, secure: true, path: "/" });
-
-  return response;
 }
