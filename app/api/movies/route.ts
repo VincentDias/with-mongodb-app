@@ -86,12 +86,12 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     const newMovie = await Movie.create(schemaValide);
 
-    return NextResponse.json({ status: 201, data: newMovie });
+    return NextResponse.json({ status: 201, data: newMovie }, { status: 201 });
   } catch (error: any) {
     if (error.status) {
       return NextResponse.json({ tatus: error.status, message: error.message, errors: error.errors }, { status: 400 });
     }
 
-    return NextResponse.json({ status: 500, message: "Internal Server Error", error: error.message });
+    return NextResponse.json({ status: 500, message: "Internal Server Error", error: error.message }, { status: 500 });
   }
 }
