@@ -10,6 +10,8 @@ export const signUpSchema = yup.object({
   password: yup.string().required("Password is required"),
 });
 
+//export default signUpSchema;
+
 export const loginSchema = yup.object({
   email: yup
     .string()

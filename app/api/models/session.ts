@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const sessionSchema = new mongoose.Schema({
+const sessionSchema = new Schema({
   user_id: {
     type: String,
     required: true,

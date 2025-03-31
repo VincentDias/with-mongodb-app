@@ -70,10 +70,8 @@ export async function GET(): Promise<NextResponse> {
  */
 export async function POST(request: Request): Promise<NextResponse> {
   try {
-    // Extraction des données de la requête
     const movieData = await request.json();
 
-    // Validation du schéma avec Yup
     let schemaValide;
     try {
       schemaValide = await movieSchema.validate(movieData, { abortEarly: false });
@@ -81,7 +79,6 @@ export async function POST(request: Request): Promise<NextResponse> {
       throw { status: 400, message: "Bad request", errors: error.errors };
     }
 
-    // Connexion à la base de données
     await connectToDb();
 
     const newMovie = await Movie.create(schemaValide);
@@ -89,7 +86,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ status: 201, data: newMovie }, { status: 201 });
   } catch (error: any) {
     if (error.status) {
-      return NextResponse.json({ tatus: error.status, message: error.message, errors: error.errors }, { status: 400 });
+      return NextResponse.json({ status: error.status, message: error.message, errors: error.errors }, { status: 400 });
     }
 
     return NextResponse.json({ status: 500, message: "Internal Server Error", error: error.message }, { status: 500 });

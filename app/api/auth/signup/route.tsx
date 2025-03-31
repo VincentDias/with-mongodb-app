@@ -40,27 +40,25 @@
 import { NextResponse } from "next/server";
 import { connectToDb } from "../../../api/lib/db";
 import { signupUser } from "../../lib/authService";
+import { signUpSchema } from "./../../../schemas/authSchema";
 
-const ERROR_USER_EXISTS = "User already exists";
-const ERROR_INTERNAL = "Internal server error";
-const ERROR_DB_CONNECTION = "Database connection error";
-const ERROR_CREDENTIAL = "Invalid credential";
-
-export async function POST(req: Request) {
+export async function POST(req: Request): Promise<NextResponse> {
   try {
     await connectToDb();
     const { name, email, password } = await req.json();
+
+    try {
+      await signUpSchema.validate({ name, email, password }, { abortEarly: true });
+    } catch (error: any) {
+      throw { status: 400, message: error.error, errors: error.errors };
+    }
+
     await signupUser(name, email, password);
     return NextResponse.json({ message: "Session started" }, { status: 201 });
   } catch (error: any) {
-    if (error.status === 409) {
-      return NextResponse.json({ error: error }, { status: 409 });
+    if (error.status) {
+      return NextResponse.json({ error: error }, { status: error.status });
     }
-    if (error.status === 401) {
-      return NextResponse.json({ error: ERROR_CREDENTIAL }, { status: 401 });
-    } else if (error.message === ERROR_DB_CONNECTION) {
-      return NextResponse.json({ message: ERROR_INTERNAL }, { status: 500 });
-    }
-    return NextResponse.json({ message: ERROR_INTERNAL, error: error.message }, { status: 500 });
+    return NextResponse.json({ message: "Internal server error", error: error.message }, { status: 500 });
   }
 }

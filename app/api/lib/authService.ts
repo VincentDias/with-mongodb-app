@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
+import Session from "../../api/models/session";
 import User from "../../api/models/user";
 import { generateToken, getTokenFromCookie, removeTokenCookie, setTokenCookie } from "../lib/tokenService";
 import { connectToDb, db } from "./db";
@@ -24,7 +25,7 @@ export async function signupUser(name: string, email: string, password: string) 
     password: hashedPassword,
   });
   const response = NextResponse.next();
-  const token = generateToken(email);
+  const token = await generateToken(email);
   setTokenCookie(response, token);
 
   const session = {
@@ -32,11 +33,11 @@ export async function signupUser(name: string, email: string, password: string) 
     token: token,
   };
 
-  const result = await db.collection("sessions").insertOne(session);
+  await db.collection("sessions").insertOne(session);
 
-  await newUser.save();
+  await User.create(newUser);
 
-  return { status: 201, message: "session started" };
+  return NextResponse.json({ status: 201, data: newUser, message: "Session started" }, { status: 201 });
 }
 
 // if (!process.env.JWT_SECRET) {
@@ -63,30 +64,50 @@ export async function signupUser(name: string, email: string, password: string) 
 //   return token;
 // }
 
-// ✅ Authentifier un utilisateur
 export async function authenticateUser(email: string, password: string) {
-  await connectToDb();
+  try {
+    await connectToDb();
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw { status: 404, error: "User not found" };
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
-  const user = await User.findOne({ email });
-  if (!user) throw new Error("User not found");
+    if (!isPasswordValid) {
+      throw { status: 401, error: "401 Unauthorized" };
+    }
 
-  const isPasswordValid = await bcrypt.compare(password, user.password);
-  if (!isPasswordValid) throw new Error("Invalid credentials");
+    const response = NextResponse.next();
+    const token = await generateToken(user.email);
+    setTokenCookie(response, token);
 
-  const token = generateToken(user._id.toString()); // ✅ Génère un token
-  return token; // Le token peut être renvoyé ou stocké dans un cookie
+    const session = Session.findOne({ user_id: user._id });
+
+    if (!session) {
+      const newSession = new Session({
+        user_id: user._id,
+        jwt: token,
+      });
+      await Session.create(newSession);
+    } else {
+      await Session.updateOne({ user_id: user._id }, { $set: { jwt: token } });
+    }
+  } catch (error: any) {
+    console.log(error);
+    throw { status: error.status, error: error.error };
+  }
+
+  return { status: 201, message: "session started" };
 }
 
-// ✅ Déconnexion de l'utilisateur
 export async function logoutUser(request: Request, response: NextResponse) {
   try {
-    const token = await getTokenFromCookie(request); // ✅ Extraire le token du cookie
+    const token = await getTokenFromCookie(request);
     console.log(`Token extracted: ${token}`);
 
-    removeTokenCookie(response); // ✅ Supprimer le token du cookie
-    return response.json({ message: "Logged out successfully" });
+    removeTokenCookie(response);
   } catch (error) {
     console.error("Error during logout:", error);
-    return response.json({ message: "Error during logout" });
+    //return response.json({ message: "Error during logout" });
   }
 }
