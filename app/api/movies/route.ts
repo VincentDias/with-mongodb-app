@@ -3,7 +3,7 @@
 import { NextResponse } from "next/server";
 import movieSchema from "../../schemas/movieSchema";
 import { connectToDb, db } from "../lib/db";
-import { Movie } from "../models/movie";
+import Movie from "../models/movie";
 
 /**
  * @swagger
