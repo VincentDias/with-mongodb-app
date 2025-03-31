@@ -102,10 +102,15 @@ export async function authenticateUser(email: string, password: string) {
 
 export async function logoutUser(request: Request, response: NextResponse) {
   try {
+    await connectToDb();
+    //const user = await Session.findOne({ user_id });
+
     const token = await getTokenFromCookie(request);
     console.log(`Token extracted: ${token}`);
 
     removeTokenCookie(response);
+
+    return { status: 200, message: "session closed" };
   } catch (error) {
     console.error("Error during logout:", error);
     //return response.json({ message: "Error during logout" });
