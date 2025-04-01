@@ -1,12 +1,13 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 
 interface ISession extends Document {
   user_id: string;
   jwt: string;
 }
 
-const sessionSchema = new Schema<ISession>({
+const sessionSchema = new mongoose.Schema<ISession>({
   user_id: {
+    unique: true,
     type: String,
     required: true,
   },
@@ -16,6 +17,6 @@ const sessionSchema = new Schema<ISession>({
   },
 });
 
-const Session = mongoose.models.sessions || mongoose.model("sessions", sessionSchema);
+const Session = mongoose.models.Session || mongoose.model("Session", sessionSchema);
 
 export default Session;

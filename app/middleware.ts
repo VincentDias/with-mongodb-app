@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 // Clé secrète utilisée pour signer les tokens JWT
-const SECRET_KEY = process.env.JWT_SECRET || "super-secret-key";
+const SECRET_KEY = process.env.JWT_SECRET as string;
 
 // Liste des routes publiques qui ne nécessitent pas d'authentification
 const publicRoutes = ["/login", "/register", "/api-doc"];

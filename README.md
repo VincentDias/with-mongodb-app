@@ -1,83 +1,212 @@
-## Example app using MongoDB
+# Projet Next.js avec MongoDB Atlas
 
-[MongoDB](https://www.mongodb.com/) is a general purpose, document-based, distributed database built for modern application developers and for the cloud era. This example will show you how to connect to and use MongoDB as your backend for your Next.js app.
+## Description
 
-If you want to learn more about MongoDB, visit the following pages:
+Ce projet est fait avec [Next.js](https://nextjs.org/). La base de données est gérée via [MongoDB Atlas](https://account.mongodb.com/account/login), et l'application est déployée sur [Vercel](https://vercel.com/). Ce projet inclut des fonctionnalités d'authentification, des API accessibles via un swagger, et une gestion dynamique des données via MongoDB.
 
-- [MongoDB Atlas](https://mongodb.com/atlas)
-- [MongoDB Documentation](https://docs.mongodb.com/)
+## Fonctionnalités
 
-## Deploy your own
+- **Authentification des utilisateurs** (inscription, connexion, déconnexion)
+- **API RESTful** pour interagir avec la base de données MongoDB
+- **Déploiement facile sur Vercel**n
 
-Once you have access to the environment variables you'll need, deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example) or preview live with [StackBlitz](https://stackblitz.com/github/vercel/next.js/tree/canary/examples/with-mongodb)
+## Prérequis
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?project-name=with-mongodb&repository-name=with-mongodb&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-mongodb&integration-ids=oac_jnzmjqM10gllKmSrG0SGrHOH)
+Avant de commencer, vous devez avoir installé les outils suivants :
 
-## How to use
+- [Node.js](https://nodejs.org/) version 14 ou supérieure
+- [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) compte et base de données configurée
+- [Vercel CLI](https://vercel.com/docs/cli) (si vous souhaitez déployer localement avant de pousser sur Vercel)
 
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init), [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/), or [pnpm](https://pnpm.io) to bootstrap the example:
+## Installation
+
+1. Clonez le projet sur votre machine locale :
+
+   ```bash
+   git clone https://https://github.com/VincentDias/with-mongodb-app
+   ```
+
+2. Installez les dépendances :
+
+   ```bash
+   cd with-mongodb-app
+   npm install
+   ```
+
+3. Configurez votre fichier `.env` avec vos informations MongoDB Atlas et autres secrets :
+
+   Créez un fichier `.env.local` à la racine du projet et ajoutez vos variables d'environnement :
+
+   ```env
+   MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/nom-de-la-db?retryWrites=true&w=majority
+   JWT_SECRET=ton_secret_jwt
+   ```
+
+4. Lancez l'application en mode développement :
+
+   ```bash
+   npm run dev
+   ```
+
+   L'application sera disponible sur `http://localhost:3000`.
+
+## API Endpoints
+
+### Routes disponibles
+
+#### 1. Authentification
+
+• POST /api/auth/signup → Inscription d’un utilisateur
+
+• POST /api/auth/login → Connexion d’un utilisateur
+
+• POST /api/auth/logout → Déconnexion d’un utilisateur
+
+• POST /api/auth/refresh → Rafraîchir le token d’accès
+
+#### 2. Movies
+
+• GET /api/movies → Récupérer tous les films
+
+• GET /api/movies/:idMovie → Récupérer un film par ID
+
+• POST /api/movies → Ajouter un film
+
+• PUT /api/movies/:idMovie → Modifier un film
+
+• DELETE /api/movies/:idMovie → Supprimer un film
+
+#### 3. Commentaires
+
+• POST /api/movies/:idMovie/comment → Ajouter un commentaire
+
+• PUT /api/movies/:idMovie/comment/:idComment → Modifier un commentaire
+
+• DELETE /api/movies/:idMovie/comment/:idComment → Supprimer un commentaire
+
+#### 4. Theaters
+
+• GET /api/theaters → Récupérer tous les cinémas
+
+• GET /api/theaters/:idTheater → Récupérer un cinéma par ID
+
+## Déploiement sur Vercel
+
+Pour déployer l'application sur Vercel, vous devez connecter votre projet à un compte Vercel. Voici les étapes à suivre :
+
+Prérequis
+
+- Un compte sur Vercel
+- Un cluster MongoDB Atlas
+- Node.js installé
+
+Déploiement
+
+1. Forker et cloner le projet
+
+   ```bash
+    git clone https://github.com/VincentDias/with-mongodb-app
+    cd with-mongodb-app
+   ```
+
+2. Installer les dépendances
+
+   ```bash
+   npm install
+   ```
+
+3. Configurer les variables d’environnement
+
+   - Créez un fichier .env.local à la racine et ajoutez :
+
+   ```bash
+    MONGODB_URI=your_mongodb_connection_string
+    JWT_SECRET=your_secret_key
+    REFRESH_SECRET=your_refresh_secret
+   ```
+
+4. Lancer le serveur localement
+
+   ```bash
+   npm install
+   ```
+
+   Accédez à http://localhost:3000
+
+5. Déployer sur Vercel
+
+   - Connectez-vous à Vercel
+
+   - Importez le dépôt GitHub
+
+   - Ajoutez les variables d’environnement sur l’interface Vercel
+
+   - Cliquez sur "Deploy"
+
+6. Consulter l’API sur Vercel
+
+   ```bash
+   https://with-mongodb-app-sable.vercel.app/api/movies
+   ```
+
+7. Créez un compte ou connectez-vous à [Vercel](https://vercel.com/).
+8. Dans le tableau de bord de Vercel, cliquez sur **"New Project"** et sélectionnez **GitHub**.
+9. Choisissez le projet que vous avez cloné et suivez les instructions de déploiement.
+10. Configurez les variables d'environnement dans les paramètres de votre projet sur Vercel :
+
+    - `MONGODB_URI`: L'URL de connexion à votre base de données MongoDB Atlas
+    - `JWT_SECRET`: Votre secret JWT pour l'authentification
+    - `REFRESH_SECRET`: Votre refreshToken pour la gestion des cookies
+
+Une fois déployé, Vercel vous fournira une URL de production que vous pourrez partager avec vos utilisateurs.
+
+## Structure du projet
+
+Voici un aperçu de la structure du projet :
 
 ```bash
-npx create-next-app --example with-mongodb with-mongodb-app
+├── pages/
+│ ├── api/
+│ │ ├── auth/
+│ │ └── users.js
+│ ├── app.js
+│ └── index.js
+├── components/
+├── lib/
+│ └── authService.js
+├── models/
+│ ├── User.js
+│ └── Session.js
+├── public/
+├── .env.local
+├── .gitignore
+├── package.json
+└── README.md
 ```
 
-```bash
-yarn create next-app --example with-mongodb with-mongodb-app
-```
+## Développement local
 
-```bash
-pnpm create next-app --example with-mongodb with-mongodb-app
-```
+1. Pour tester l'API localement, utilisez `POSTMAN` pour interagir avec les points de terminaison définis dans `pages/api/auth`.
+2. Utilisez `npm run dev` pour démarrer le serveur en mode développement. Tous les changements seront automatiquement rechargés grâce au "hot reloading".
 
-## Configuration
+## Notes sur MongoDB Atlas
 
-### Set up a MongoDB database
+1. Vous devez avoir un compte MongoDB Atlas et une base de données configurée.
+2. Vous pouvez trouver l'URL de connexion dans l'onglet **Clusters** de votre compte MongoDB Atlas. Copiez cette URL et remplacez `<username>` et `<password>` par vos informations d'identification.
 
-Set up a MongoDB database either locally or with [MongoDB Atlas for free](https://mongodb.com/atlas).
+## Notes sur Vercel
 
-### Set up environment variables
+1. Vous devez avoir un compte Vercel.com et importer votre projet
+2. Vous pourrez alors vous rendre dans les settings du projets pour indiquer vos variables d'environnement
 
-Copy the `env.local.example` file in this directory to `.env.local` (which will be ignored by Git):
+## Remarques sur la sécurité
 
-```bash
-cp .env.local.example .env.local
-```
+- **MongoDB URI** : Assurez-vous que votre URI MongoDB Atlas est configuré avec des règles de sécurité pour limiter l'accès uniquement aux IP autorisées.
+- **JWT Secret** : Ne jamais exposer votre JWT en production. Utilisez des variables d'environnement pour le sécuriser.
+- **REFRESH_SECRET** : Ne jamais exposer votre JWT en production. Utilisez des variables d'environnement pour le sécuriser.
 
-Set each variable on `.env.local`:
+## Pour plus d'informations
 
-- `MONGODB_URI` - Your MongoDB connection string. If you are using [MongoDB Atlas](https://mongodb.com/atlas) you can find this by clicking the "Connect" button for your cluster.
-
-### Run Next.js in development mode
-
-```bash
-npm install
-npm run dev
-# or
-yarn install
-yarn dev
-# or
-pnpm install
-pnpm dev
-```
-
-Your app should be up and running on [http://localhost:3000](http://localhost:3000)! If it doesn't work, post on [GitHub discussions](https://github.com/vercel/next.js/discussions).
-
-You will either see a message stating "You are connected to MongoDB" or "You are NOT connected to MongoDB". Ensure that you have provided the correct `MONGODB_URI` environment variable.
-
-When you are successfully connected, you can refer to the [MongoDB Node.js Driver docs](https://mongodb.github.io/node-mongodb-native/3.4/tutorials/collections/) for further instructions on how to query your database.
-
-## Deploy on Vercel
-
-You can deploy this app to the cloud with [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
-
-#### Deploy Your Local Project
-
-To deploy your local project to Vercel, push it to GitHub/GitLab/Bitbucket and [import to Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example).
-
-**Important**: When you import your project on Vercel, make sure to click on **Environment Variables** and set them to match your `.env.local` file.
-
-#### Deploy from Our Template
-
-Alternatively, you can deploy using our template by clicking on the Deploy button below.
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?project-name=with-mongodb&repository-name=with-mongodb&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-mongodb&integration-ids=oac_jnzmjqM10gllKmSrG0SGrHOH)
+- [Documentation de Next.js](https://nextjs.org/docs)
+- [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+- [Vercel](https://vercel.com/docs)

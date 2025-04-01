@@ -1,7 +1,7 @@
 import Image from "next/image";
-import { testDatabaseConnection } from "../actions";
 import Link from "next/link";
 import MoviesList from "../../pages/movies/movieList";
+import { testDatabaseConnection } from "../action";
 
 export default async function Home() {
   const isConnected = await testDatabaseConnection();

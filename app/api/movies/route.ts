@@ -1,9 +1,9 @@
 //movies
 
 import { NextResponse } from "next/server";
+import { connectToDb, db } from "../../../lib/db";
+import Movie from "../../models/movie";
 import movieSchema from "../../schemas/movieSchema";
-import { connectToDb, db } from "../lib/db";
-import Movie from "../models/movie";
 
 /**
  * @swagger

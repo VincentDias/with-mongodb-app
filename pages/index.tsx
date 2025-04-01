@@ -1,5 +1,5 @@
-import client from "@/app/api/lib/mongodb";
 import LoginForm from "@/app/components/loginForm";
+import client from "@/lib/mongodb";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { Inter } from "next/font/google";
 import Image from "next/image";

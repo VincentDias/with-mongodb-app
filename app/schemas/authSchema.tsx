@@ -1,7 +1,7 @@
 import * as yup from "yup";
 
 export const signUpSchema = yup.object({
-  name: yup.string().required("Name is required").max(100, "Name must be at most 40 characters"),
+  name: yup.string().required("Name is required").max(100, "Name must be at most 40 characters").min(6),
   email: yup
     .string()
     .email("Invalid email format")
@@ -9,8 +9,6 @@ export const signUpSchema = yup.object({
     .max(100, "Email must be at most 60 characters"),
   password: yup.string().required("Password is required"),
 });
-
-//export default signUpSchema;
 
 export const loginSchema = yup.object({
   email: yup
