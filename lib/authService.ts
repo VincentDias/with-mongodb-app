@@ -7,26 +7,20 @@ import { JWT_SECRET, REFRESH_SECRET } from "../app/tokenConfig";
 import { connectToDb } from "./db";
 
 export async function signupUser(name: string, email: string, password: string) {
-  try {
-    await connectToDb();
-    const existingUser = await User.findOne({ email });
+  await connectToDb();
+  const existingUser = await User.findOne({ email });
 
-    if (existingUser) {
-      throw { status: 403, error: "User already exists" };
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    await User.create({
-      name,
-      email,
-      password: hashedPassword,
-    });
-
-    return generateTokens(email);
-  } catch (error: any) {
-    throw error;
+  if (existingUser) {
+    throw { status: 403, error: "User already exists" };
   }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  await User.create({
+    name,
+    email,
+    password: hashedPassword,
+  });
 }
 
 export async function loginUser(email: string, password: string) {
@@ -79,7 +73,7 @@ export async function refreshUser(newRefreshToken: string): Promise<NextResponse
     // }
 
     // return { status: 201, newAccessToken, newRefreshToken };
-    return NextResponse.json({ okok: "okok" });
+    return NextResponse.json({ status: 200, message: "Session refresh" });
   } catch (error) {
     throw error;
   }
@@ -119,17 +113,9 @@ export function generateTokens(email: string) {
   return { newAccessToken, newRefreshToken };
 }
 
-export function verifyAccessToken(token: string) {
-  return jwt.verify(token, JWT_SECRET);
-}
-
-export function verifyRefreshToken(token: string) {
-  return jwt.verify(token, REFRESH_SECRET);
-}
-
 export async function verifyToken(token: string): Promise<any> {
   try {
-    return jwt.verify(token, JWT_SECRET);
+    return jwt.verify(token, REFRESH_SECRET);
   } catch (error) {
     console.error("Token verification failed:", error);
     throw new Error("Invalid or expired token");
