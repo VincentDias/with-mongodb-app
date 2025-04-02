@@ -14,7 +14,6 @@ export async function POST(req: Request): Promise<NextResponse> {
     await signupUser(name, email, password);
     return NextResponse.json({ status: 200, message: "User registered successfully" }, { status: 200 });
   } catch (error: any) {
-    console.log("erreur   ", error);
     return NextResponse.json({ status: error.status, error: error.error }, { status: error.status });
   }
 }
