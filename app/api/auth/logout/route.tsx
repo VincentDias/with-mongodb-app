@@ -11,7 +11,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: "Tokens not found" }, { status: 401 });
     }
 
-    await logoutUser(accessToken);
+    await logoutUser(refreshToken);
 
     const response = NextResponse.json({ message: "Session disconnected" }, { status: 200 });
 
