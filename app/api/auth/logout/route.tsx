@@ -13,8 +13,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     await logoutUser(accessToken);
 
-    console.log("apres              ", accessToken);
-
     const response = NextResponse.json({ message: "Session disconnected" }, { status: 200 });
 
     response.cookies.set("accessToken", "", {
