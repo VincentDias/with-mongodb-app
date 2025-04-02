@@ -45,19 +45,19 @@ export async function loginUser(email: string, password: string) {
   const session = await Session.findOne({ user_id: user._id });
 
   if (!session) {
-    await Session.create({ user_id: user._id, jwt: newAccessToken });
+    await Session.create({ user_id: user._id, jwt: newRefreshToken });
   } else {
-    await Session.updateOne({ user_id: user._id }, { $set: { jwt: newAccessToken } });
+    await Session.updateOne({ user_id: user._id }, { $set: { jwt: newRefreshToken } });
   }
 
   return { newAccessToken, newRefreshToken };
 }
 
-export async function refreshUser(refreshToken: string): Promise<NextResponse> {
+export async function refreshUser(newRefreshToken: string): Promise<NextResponse> {
   try {
     await connectToDb();
 
-    const session = await Session.findOne({ jwt: refreshToken });
+    const session = await Session.findOne({ jwt: newRefreshToken });
 
     if (!session) {
       throw { status: 401, error: "Session not found" };
@@ -65,12 +65,10 @@ export async function refreshUser(refreshToken: string): Promise<NextResponse> {
 
     let decoded: any;
     try {
-      decoded = jwt.verify(refreshToken, REFRESH_SECRET);
+      decoded = jwt.verify(newRefreshToken, REFRESH_SECRET);
     } catch (err) {
       throw { status: 401, error: "Invalid or expired refresh token" };
     }
-
-    console.log("decode      ", decoded);
 
     // const { accessToken, refreshToken } = generateTokens(decoded);
 
@@ -87,9 +85,9 @@ export async function refreshUser(refreshToken: string): Promise<NextResponse> {
   }
 }
 
-export async function logoutUser(token: string) {
+export async function logoutUser(newRefreshToken: string) {
   try {
-    const sessionJwt = await Session.findOne({ jwt: token });
+    const sessionJwt = await Session.findOne({ jwt: newRefreshToken });
     if (!sessionJwt) {
       throw new Error("Session not found");
     }
@@ -99,7 +97,7 @@ export async function logoutUser(token: string) {
       throw new Error("User not found");
     }
 
-    const tokenJwt = await verifyToken(token);
+    const tokenJwt = await verifyToken(newRefreshToken);
     if (!tokenJwt) {
       throw new Error("Invalid token");
     }
@@ -109,8 +107,6 @@ export async function logoutUser(token: string) {
     }
 
     await Session.deleteOne({ user_id: userJwt._id });
-
-    console.log("Session deleted successfully.");
   } catch (error) {
     console.error("Logout Error:", error);
     throw error;
