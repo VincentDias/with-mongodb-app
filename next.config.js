@@ -11,3 +11,19 @@ module.exports = {
     return config;
   },
 };
+
+module.exports = {
+  reactStrictMode: true,
+  webpack(config, { dev }) {
+    if (dev) {
+      config.module.rules.push({
+        test: /\.(js|jsx|ts|tsx)$/,
+        loader: "babel-loader",
+        options: {
+          plugins: ["react-refresh/babel"],
+        },
+      });
+    }
+    return config;
+  },
+};
