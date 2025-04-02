@@ -89,24 +89,30 @@ export async function refreshUser(refreshToken: string): Promise<NextResponse> {
 
 export async function logoutUser(token: string) {
   try {
-    console.log("et l'email??              ", token);
-    const decoded = await verifyToken(token);
+    const sessionJwt = await Session.findOne({ jwt: token });
+    if (!sessionJwt) {
+      throw new Error("Session not found");
+    }
 
-    console.log("decoded      ", decoded);
+    const userJwt = await User.findById(sessionJwt.user_id);
+    if (!userJwt) {
+      throw new Error("User not found");
+    }
 
-    // if (decoded.email !== expectedEmail) {
-    //   throw new Error("Invalid email in token");
-    // }
-
-    if (!decoded || !decoded.user_id) {
+    const tokenJwt = await verifyToken(token);
+    if (!tokenJwt) {
       throw new Error("Invalid token");
     }
 
-    const userId = decoded.user_id;
-    console.log("userId ????????  ", userId);
+    if (tokenJwt.email !== userJwt.email) {
+      throw new Error("Invalid email in token");
+    }
 
-    await Session.deleteOne({ user_id: userId });
+    await Session.deleteOne({ user_id: userJwt._id });
+
+    console.log("Session deleted successfully.");
   } catch (error) {
+    console.error("Logout Error:", error);
     throw error;
   }
 }
